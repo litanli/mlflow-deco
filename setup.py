@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='mlflow_deco',
@@ -6,7 +6,8 @@ setup(
     description='A mlflow decorator with QOL and handy features missing from native MlFlow.',
     author='Litan Li',
     author_email='litan.li3@gmail.com',
-    packages=['mlflow_deco'],
+    packages=find_packages('src'),
+    package_dir={'': 'src'},
     install_requires=[
         'mlflow',
         'gitpython',
