@@ -33,7 +33,7 @@ import os
 import numpy as np
 
 @mlflow_tracking(experiment='tutorial')
-def my_function(a, b, **kwargs):
+def run_experiment(a, b, **kwargs):
 
     # Your code here
 
@@ -60,10 +60,10 @@ def my_function(a, b, **kwargs):
     # log all contents of a directory
     log_artifacts(output_path)
 
-    return 'aloha'
+    return 'thunderstruck'
 
 # decorator args passed as kwargs at call time takes precedence
-my_function(a, b, experiment='tesla coil')  # 'tesla coil' overrides 'default'
+run_experiment(a, b, experiment='tesla coil')  # 'tesla coil' overrides 'tutorial'
 ```
 
 
