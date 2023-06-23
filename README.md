@@ -69,11 +69,8 @@ And adds a few missing and QOL features:
 
 
 
-
-
-
 # Installation
-pip install mlflow GitPython conda-pack
+pip install git+https://github.com/litanli/mlflow-deco.git
 
 
 
