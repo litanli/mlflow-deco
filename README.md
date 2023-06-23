@@ -1,24 +1,30 @@
-MLFlow is a popular open-sourced experiment tracking, model registry and serving tool under the Apache License 2.0 https://mlflow.org/docs/latest/what-is-mlflow.html. While other MLOps tools like Weights & Biases offer more features, the basic logging, tracking, and querying capabilities are more than enough and is free for commerical use.
-
-Specifically the MLFlow Tracking component allows you to define experiments and launch runs, loging parameters, metrics, tags and artifacts to one centralized backend. It has a front-end UI where you can query runs by any combination of metrics, parameters and tags. Of course, there's a Python API for programmatic querying as well. 
+MLflow is an experiment tracking, model registry and serving tool under the Apache License 2.0 https://mlflow.org/docs/latest/what-is-mlflow.html. While other MLOps tools like Weights & Biases offer more features, MLflow is free for commerical use.
 
 # Definitions
-Backend store - the location where MlFlow logs params, metrics and tags of a run.
-Artifact store - the location where MlFlow logs artifacts (files and directories).
-Tracking uri - the URI of the backend store.
-Artifact uri - the URI of the artifact store. By default, MlFlow logs artifacts to the <experiment_id>/<run_id>/artifacts directory under the tracking uri.
-Experiments are created under the tracking uri, and runs are created under an experiment.
+Backend store - the location where MLflow logs params, metrics and tags of a run.<br>
+Artifact store - the location where MLflow logs artifacts (files and directories).<br>
+Tracking uri - the URI of the backend store.<br>
+Artifact uri - the URI of the artifact store. By default, MLflow logs artifacts to the <experiment_id>/<run_id>/artifacts directory under the tracking uri.<br>
+Experiments are created under the tracking uri, and runs are created under an experiment.<br>
 
-# Why this Repo
-Some of the clunkier/missing features of MLFlow include
+# Why this decorator?
+Some of the clunkier or missing features of MLflow include:
 - Runs are started under a context manager, so all your code needs an extra tab.
-- Conda envs and repository info (repoURL, branch name, commit hash, diff patch) aren't saved like they are in Wandb.
+- Conda envs and repo info (repoURL, branch name, commit hash, diff patch) aren't saved like they are in Wandb.
 - If you're launching experiments from a notebook, the source tag gets populated with ipykernel_launcher.py rather than the path to your actual notebook.
 
-The mlflow_tracking decorator fixes all of those things:
-1. Add a **kwargs argument to your function so the decorator args can be passed at call time.
+The `mlflow_tracking` decorator fixes all of the above:
+1. Add a `**kwargs` argument to your function so the decorator args can be passed at call time
 2. Decorate your function
 3. Call your function with decorator args passed as additional kwargs
+
+
+And it adds a few missing and QOL features:
+
+- Detects if you're inside a repo, and sets the repoURL, branch and commit hash as tags of the Run. If your working tree is dirty, it generates a diff.patch and logs it as an artifact.
+- Runs conda-pack https://conda.github.io/conda-pack/ on your current conda environment. If that fails, it resorts to conda env export. Environment yamls are notoriously bad at recreating large environments, by bad I mean `conda create` takes forever. `conda-pack` works much better but fails when the environment contains pip _and_ conda installations of the same packages.
+- If you're running from a Jupyter notebook, it sets the source as the path to your notebook and your notebook name.
+- Creates a new MLflow Experiment if the experiment name you provide doesn't currently exist.
 
 ```
 from mlflow_deco.decorator import mlflow_tracking
@@ -60,12 +66,6 @@ def my_function(a, b, **kwargs):
 my_function(a, b, experiment='tesla coil')  # 'tesla coil' overrides 'default'
 ```
 
-And adds a few missing and QOL features:
-
-- Detects if you're inside a repo, and sets the repoURL, branch and commit hash as tags of the Run. If you're working tree is dirty, it generates a diff.patch and logs it as an artifact.
-- Runs conda-pack https://conda.github.io/conda-pack/ on your current Conda environment. If that fails, it resorts to conda env export. Environment yamls are notoriously bad at recreating complex environments, by bad I mean conda create takes forever. conda-pack works much better but fails when said conda environment contains pip _and_ conda installations of the same package.
-- If you're running from a Jupyter notebook, it sets the source as the path of your notebook and your notebook name.
-- Creates a new MlFlow Experiment if the experiment name you provide doesn't currently exist.
 
 
 
