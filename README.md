@@ -21,7 +21,7 @@ The `mlflow_tracking` decorator fixes all of the above:
 
 And it adds a few missing and QOL features:
 
-- Detects if you're inside a repo, and sets the repoURL, branch and commit hash as tags of the Run. If your working tree is dirty, it generates a diff.patch and logs it as an artifact.
+- Detects if you're inside a repo, and sets the repoURL, branch and commit hash as tags of the Run. If your working tree is dirty, it generates a `diff.patch` and logs it as an artifact.
 - Runs conda-pack https://conda.github.io/conda-pack/ on your current conda environment. If that fails, it resorts to conda env export. Environment yamls are notoriously bad at recreating large environments, by bad I mean `conda create` takes forever. `conda-pack` works much better but fails when the environment contains pip _and_ conda installations of the same packages.
 - If you're running from a Jupyter notebook, it sets the source as the path to your notebook and your notebook name.
 - Creates a new MLflow Experiment if the experiment name you provide doesn't currently exist.
