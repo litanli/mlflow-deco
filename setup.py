@@ -11,7 +11,9 @@ setup(
     install_requires=[
         'mlflow',
         'gitpython',
-        'conda-pack'
+        'conda-pack',
+        'pyyaml',
+        'numpy'
     ],
     license='MIT',
 )
