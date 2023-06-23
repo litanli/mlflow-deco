@@ -62,7 +62,7 @@ def my_function(a, b, **kwargs):
 
     return 'aloha'
 
-# decorator args passed as kwargs to my_function takes precedence
+# decorator args passed as kwargs at call time takes precedence
 my_function(a, b, experiment='tesla coil')  # 'tesla coil' overrides 'default'
 ```
 
