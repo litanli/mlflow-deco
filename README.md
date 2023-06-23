@@ -11,7 +11,7 @@ Experiments are created under the tracking uri, and runs are created under an ex
 Some of the clunkier or missing features of MLflow include:
 - Runs are started under a context manager, so all your code needs an extra tab.
 - Conda envs and repo info (repoURL, branch name, commit hash, diff patch) aren't saved like they are in Wandb.
-- If you're launching experiments from a notebook, the source tag gets populated with ipykernel_launcher.py rather than the path to your actual notebook.
+- If you're launching experiments from a notebook, the source tag gets populated with `ipykernel_launcher.py` rather than the path to your actual notebook.
 
 The `mlflow_tracking` decorator fixes all of the above:
 1. Add a `**kwargs` argument to your function so the decorator args can be passed at call time
