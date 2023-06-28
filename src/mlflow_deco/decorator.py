@@ -11,7 +11,6 @@ from mlflow import log_artifact, log_param, log_params, set_tag, set_tags
 # set your tracking uri here
 MLFLOW_TRACKING_URI = "file:/path/to/mlruns"
 
-
 def ran_from_jupyter():
     """Infer if you're running from a notebook by looking 
     for ipykernel_launcher.py in the call stack.
@@ -63,6 +62,13 @@ def get_env():
 
 
 def run_conda_pack(env_name: str):
+    
+    print(f"Running conda pack on env {env_name}.")
+
+    os.makedirs("/tmp/mlflow", exist_ok=True)
+    fname = f"/tmp/mlflow/{env_name}.tar.gz"
+    if os.path.exists(fname):
+        os.remove(fname)  # otherwise conda pack complains
 
     return subprocess.run(
         [
@@ -71,21 +77,24 @@ def run_conda_pack(env_name: str):
             "-n",
             env_name,
             "-o",
-            f"/tmp/mlflow/{env_name}.tar.gz",
+            fname,
             "--ignore-editable-packages",
         ],
         capture_output=True,
         text=True,
-    )
+    ), fname
 
 
 def run_conda_export(env_name: str):
+
+    os.makedirs("/tmp/mlflow", exist_ok=True)
+    fname = f"/tmp/mlflow/{env_name}.yaml"
     return subprocess.run(
-        [f"conda env export > /tmp/mlflow/{env_name}.yaml"],
+        [f"conda env export > {fname}"],
         capture_output=True,
         text=True,
         shell=True,
-    )
+    ), fname
 
 
 def log_environ():
@@ -95,31 +104,19 @@ def log_environ():
     # using a yaml can get stuck for large environments)
 
     env_name = get_env()
-
-    os.makedirs("/tmp/mlflow", exist_ok=True)
-
-    fname = f"/tmp/mlflow/{env_name}.tar.gz"
-    if os.path.exists(fname):
-        os.remove(fname)  # otherwise conda pack complains
-
-    print(f"Running conda pack on env {env_name}.")
-    result = run_conda_pack(env_name)
+    result, fname = run_conda_pack(env_name)
 
     if result.returncode == 0:
         log_artifact(fname)
-
     else:
         print("Warning: conda pack failed, resorting to conda env export.")
-        # print(result.stderr)
-
-        result = run_conda_export(env_name)
+        
+        result, fname = run_conda_export(env_name)
         if result.returncode == 0:
-            log_artifact(f"/tmp/mlflow/{env_name}.yaml")
-
+            log_artifact(fname)
         else:
             print("Warning: conda env export also failed. Your env will not be logged.")
-            # print(result.stderr)
-
+           
 
 def log_code_version(notebook_name: str, repo_path: str | None):
 

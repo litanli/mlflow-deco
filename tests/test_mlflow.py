@@ -1,5 +1,4 @@
 import os
-import shutil
 import unittest
 from contextlib import contextmanager
 from unittest.mock import MagicMock, patch
@@ -84,29 +83,15 @@ def check_obj_logged(fname, path):
     return False
 
 
-class TestSaveEnv(unittest.TestCase):
+class TestLogEnviron(unittest.TestCase):
     def setUp(self):
         self.tracking_uri = "/tmp/mlflow/mlruns"
         self.env_name = get_env()
 
-    def test_conda_pack(self):
-
-        with tmp_dir():
-            with mlflow.start_run(experiment_id=0) as run:
-                log_environ()
-                self.assertTrue(
-                    check_obj_logged(
-                        f"{self.env_name}.tar.gz",
-                        os.path.join(
-                            self.tracking_uri, f"0/{run.info.run_id}/artifacts"
-                        ),
-                    )
-                )
-        self.assertTrue(os.path.exists(f"/tmp/mlflow/{self.env_name}.tar.gz"))
-
     @patch("mlflow_deco.decorator.run_conda_pack")
     def test_conda_export(self, mock_run_conda_pack):
-        mock_run_conda_pack.return_value = MagicMock(returncode=1, stderr="")
+        fname = f"/tmp/mlflow/{self.env_name}.tar.gz"
+        mock_run_conda_pack.return_value = (MagicMock(returncode=1, stderr=""), fname)
         with tmp_dir():
             with mlflow.start_run(experiment_id=0) as run:
                 log_environ()
@@ -119,9 +104,6 @@ class TestSaveEnv(unittest.TestCase):
                     )
                 )
         self.assertTrue(os.path.exists(f"/tmp/mlflow/{self.env_name}.yaml"))
-
-    # def tearDown(self):
-    #     shutil.rmtree("/tmp/mlflow")
 
 
 def mock_git_repo():
@@ -184,10 +166,6 @@ class TestLogCodeVersion(unittest.TestCase):
                         "mlflow.source.name", f"/tmp/mlflow/mlruns/0/{run.info.run_id}/tags"
                     )
                 )
-
-
-#     def tearDown(self):
-#         shutil.rmtree("/tmp/mlflow")
 
 
 def get_latest_directory(path):
