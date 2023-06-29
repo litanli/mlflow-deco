@@ -75,7 +75,7 @@ def run_experiment(a, b, **kwargs):
     return "hello world"
 
 # decorator args passed as kwargs at call time takes precedence
-run_experiment(a, b, experiment='tesla coil')  # 'tesla coil' overrides 'tutorial'
+run_experiment(a, b, experiment="tesla coil")  # "tesla coil" overrides "tutorial"
 ```
 ---
 #### Installation 
