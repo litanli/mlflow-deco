@@ -1,10 +1,8 @@
 MLflow is an experiment tracking, model registry and serving tool under the Apache License 2.0 https://mlflow.org/docs/latest/what-is-mlflow.html. While other MLOps tools like Weights & Biases offer more features, MLflow is free for commercial use.
 
 # Definitions
-Backend store - the location where MLflow logs params, metrics and tags of a run.<br>
-Artifact store - the location where MLflow logs artifacts (files and directories).<br>
-Tracking uri - the URI of the backend store.<br>
-Artifact uri - the URI of the artifact store. By default, MLflow logs artifacts to the <experiment_id>/<run_id>/artifacts directory under the tracking uri.<br>
+Tracking uri: URI of the backend store where MLflow logs params, metrics and tags of a run.<br>
+Artifact uri: URI of the artifact store where MLflow logs artifacts (files and directories). By default, MLflow logs artifacts to the <experiment_id>/<run_id>/artifacts directory under the tracking uri.<br>
 Experiments are created under the tracking uri, and runs are created under an experiment.<br>
 
 # Why this decorator?
@@ -22,7 +20,7 @@ The `mlflow_tracking` decorator fixes all of the above:
 And it adds a few missing and QOL features:
 
 - Detects if you're inside a repo, and sets the repoURL, branch and commit hash as tags of the Run. If your working tree is dirty, it generates a `diff.patch` and logs it as an artifact.
-- Runs conda-pack https://conda.github.io/conda-pack/ on your current conda environment. If that fails, it resorts to `conda env export`. Environment yamls are notoriously bad at recreating large environments, by bad I mean `conda create` takes forever. `conda-pack` runs a bit slower but when it's time to recreate an environment, it's fast. However, conda-pack fails when the environment contains pip _and_ conda installations of the same packages, so if conda-pack fails, consider whether this is the case.
+- Runs conda-pack https://conda.github.io/conda-pack/ on your current conda environment. If that fails, it resorts to `conda env export`. Environment yamls are notoriously bad at recreating large environments, by bad I mean `conda create` takes forever. conda-pack runs a bit slower but when it's time to recreate an environment, it's fast. However, conda-pack fails when the environment contains pip _and_ conda installations of the same packages, so if conda-pack fails, consider whether this is the case.
 - If you're running from a Jupyter notebook, it sets the source as the path to your notebook and your notebook name.
 - Creates a new MLflow Experiment if the experiment name you provide doesn't currently exist.
 
