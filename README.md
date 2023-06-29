@@ -1,8 +1,8 @@
 [MLflow](https://mlflow.org/docs/latest/what-is-mlflow.html) is an experiment tracking tool under the Apache License 2.0. While other MLOps tools like Weights & Biases offer more features, MLflow is free for commercial use.
 
 # Definitions
-Tracking uri: URI of the backend store where MLflow logs params, metrics and tags of a run.<br>
-Artifact uri: URI of the artifact store where MLflow logs artifacts (files and directories).<br>
+Tracking uri: backend store location where MLflow logs the params, metrics and tags of a run.<br>
+Artifact uri: artifact store location where MLflow logs artifacts (files and directories).<br>
 Hierarchy: backend and artifact store, experiment, run.<br>
 
 # Why this decorator?
