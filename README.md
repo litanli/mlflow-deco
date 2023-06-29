@@ -1,4 +1,4 @@
-MLflow is an experiment tracking, model registry and serving tool under the Apache License 2.0 https://mlflow.org/docs/latest/what-is-mlflow.html. While other MLOps tools like Weights & Biases offer more features, MLflow is free for commerical use.
+MLflow is an experiment tracking, model registry and serving tool under the Apache License 2.0 https://mlflow.org/docs/latest/what-is-mlflow.html. While other MLOps tools like Weights & Biases offer more features, MLflow is free for commercial use.
 
 # Definitions
 Backend store - the location where MLflow logs params, metrics and tags of a run.<br>
@@ -60,7 +60,7 @@ def run_experiment(a, b, **kwargs):
     # log all contents of a directory
     log_artifacts(output_path)
 
-    return 'thunderstruck'
+    return 'hello world'
 
 # decorator args passed as kwargs at call time takes precedence
 run_experiment(a, b, experiment='tesla coil')  # 'tesla coil' overrides 'tutorial'
