@@ -22,7 +22,7 @@ The `mlflow_tracking` decorator fixes the above:
 - if your working tree is dirty, logs a `diff.patch` artifact
 - runs [conda-pack](https://conda.github.io/conda-pack/) on your current conda environment; if that fails, resort to `conda env export`<sup>*</sup> 
 - populates the source tag with `path/to/notebook_name` when launching from a notebook
-- creates a new MLflow experiment if provided experiment name doesn't exist
+- creates a new MLflow experiment if the provided experiment name doesn't exist
 
 <sup>*</sup> Environment yamls are notoriously bad at recreating large environments, by bad I mean `conda create` takes forever. `conda pack` runs a bit slower but when it's time to recreate an environment, it's fast. <br><br>
 *Remark*: `conda pack` fails when the environment contains both pip _and_ conda installations of the same packages, so if it fails, check whether this is the case.
