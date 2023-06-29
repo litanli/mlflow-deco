@@ -1,30 +1,42 @@
+### MLflow Decorator
+
 [MLflow](https://mlflow.org/docs/latest/what-is-mlflow.html) is an experiment tracking tool under the Apache License 2.0. While other MLOps tools like Weights & Biases offer more features, MLflow is free for commercial use.
 
-# Definitions
-Tracking uri: backend store location where MLflow logs the params, metrics and tags of a run.<br>
-Artifact uri: artifact store location where MLflow logs artifacts (files and directories).<br>
-Hierarchy: backend and artifact store, experiment, run.<br>
+---
+#### Definitions
+_Tracking uri_: backend store location where MLflow logs the params, metrics and tags of a run.<br>
+_Artifact uri_: artifact store location where MLflow logs artifacts (files and directories).<br><br>
+The hierarchy goes:
+* backend and artifact store
+* experiment
+* run<br>
+---
+#### Why this decorator? 
+Some of the MLflow's missing or clunkier aspects:
+- does not log your conda environment and repository info
+- populates the source tag with `ipykernel_launcher.py` when prototyping experiments from a notebook
+- starts runs under a context manager, so all your code needs an extra tab
 
-# Why this decorator?
-Some of the clunkier or missing features of MLflow include:
-- Runs are started under a context manager, so all your code needs an extra tab.
-- Conda envs and repo info (repoURL, branch name, commit hash, diff patch) aren't saved like they are in Wandb.
-- If you're launching experiments from a notebook, the source tag gets populated with `ipykernel_launcher.py` rather than the path to your actual notebook.
+The `mlflow_tracking` decorator fixes the above:
+- logs the repo URL, branch name, and commit hash as run tags
+- if your working tree is dirty, logs a `diff.patch` artifact
+- runs [conda-pack](https://conda.github.io/conda-pack/) on your current conda environment; if that fails, resort to `conda env export`<sup>*</sup> 
+- populates the source tag with `path/to/notebook_name` when launching from a notebook
+- creates a new MLflow experiment if provided experiment name doesn't exist
 
-The `mlflow_tracking` decorator fixes all of the above:
-1. Add a `**kwargs` argument to your function so the decorator args can be passed at call time
-2. Decorate your function
-3. Call your function with decorator args passed as additional kwargs
+<sup>*</sup> Environment yamls are notoriously bad at recreating large environments, by bad I mean `conda create` takes forever. `conda pack` runs a bit slower but when it's time to recreate an environment, it's fast. <br><br>
+*Remark*: `conda pack` fails when the environment contains both pip _and_ conda installations of the same packages, so if it fails, check whether this is the case.
+
+---
+1. add a `**kwargs` argument to your function so decorator args can be passed at call time
+2. decorate your function
+3. call your function with decorator args passed as kwargs
 
 
-And it adds a few missing and QOL features:
 
-- Logs the repo URL, branch and commit hash as tags of the Run. If your working tree is dirty, it logs a `diff.patch` as an artifact.
-- Runs [conda-pack](https://conda.github.io/conda-pack/) on your current conda environment. If that fails, it resorts to `conda env export`. Environment yamls are notoriously bad at recreating large environments, by bad I mean `conda create` takes forever. conda-pack runs a bit slower but when it's time to recreate an environment, it's fast. However, conda-pack fails when the environment contains pip _and_ conda installations of the same packages, so if conda-pack fails, consider whether this is the case.
-- If you're running from a Jupyter notebook, it sets the source as the path to your notebook and your notebook name.
-- Creates a new MLflow Experiment if the experiment name you provide doesn't currently exist.
 
-```
+
+```python
 from mlflow_deco.decorator import mlflow_tracking
 from mlflow import log_metric, log_param, log_params, log_artifact, log_artifacts, set_tags
 import os
@@ -58,18 +70,11 @@ def run_experiment(a, b, **kwargs):
     # log all contents of a directory
     log_artifacts(output_path)
 
-    return 'hello world'
+    return "hello world"
 
 # decorator args passed as kwargs at call time takes precedence
 run_experiment(a, b, experiment='tesla coil')  # 'tesla coil' overrides 'tutorial'
 ```
-
-
-
-
-# Installation
+---
+#### Installation 
 pip install git+https://github.com/litanli/mlflow-deco.git
-
-
-
-
