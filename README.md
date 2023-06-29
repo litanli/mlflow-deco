@@ -1,4 +1,4 @@
-MLflow is an experiment tracking, model registry and serving tool under the Apache License 2.0 https://mlflow.org/docs/latest/what-is-mlflow.html. While other MLOps tools like Weights & Biases offer more features, MLflow is free for commercial use.
+MLflow is an experiment tracking tool under the Apache License 2.0 https://mlflow.org/docs/latest/what-is-mlflow.html. While other MLOps tools like Weights & Biases offer more features, MLflow is free for commercial use.
 
 # Definitions
 Tracking uri: URI of the backend store where MLflow logs params, metrics and tags of a run.<br>
