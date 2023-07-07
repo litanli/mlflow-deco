@@ -188,7 +188,7 @@ def mlflow_tracking(
 
     """Decorator used to start a new mlflow Run. To override mlflow_tracking args
     (experiment, run_name, etc.) via kwargs to the decorated function, your function
-    needs to have **kwargs in it's signature (my_function below).
+    needs to have **kwargs in its signature (my_function below).
 
     e.g.
 
@@ -197,13 +197,13 @@ def mlflow_tracking(
     import os
     import numpy as np
 
-    @mlflow_tracking(experiment='tutorial')
+    @mlflow_tracking(experiment="tutorial", tracking_uri="path/to/mlruns")
     def my_function(a, b, **kwargs):
 
         # Your code here
 
         # log params
-        log_params({'param1': 1, 'param2': 'hello world'})
+        log_params({"param1": 1, "param2": "hello world"})
 
         # log metrics
         for step, mse in enumerate([0.8, 0.85, 0.9]):
@@ -225,10 +225,10 @@ def mlflow_tracking(
         # log all contents of a directory
         log_artifacts(output_path)
 
-        return 'aloha'
+        return "hello world"
 
     # decorator args passed as kwargs to my_function takes precedence
-    my_function(a, b, experiment='tesla coil')  # 'tesla coil' overrides 'default'
+    my_function(a, b, experiment="tesla coil")  # "tesla coil" overrides "tutorial"
 
 
     Parameters
@@ -263,26 +263,38 @@ def mlflow_tracking(
     """
 
     def decorator(f):
+
         @wraps(f)
         def inner(*args, **kwargs):
 
-            # kwarg values provided from function call overrides
+            # kwarg values provided from function call override
             # arg values provided to the decorator
-            _experiment = kwargs.get("experiment", experiment)
-            _run_name = kwargs.get("run_name", run_name)
-            _tracking_uri = kwargs.get("tracking_uri", tracking_uri)
-            _repo_path = kwargs.get("repo_path", repo_path)
-            _notebook_name = kwargs.get("notebook_name", notebook_name)
-            _log_env = kwargs.get("log_env", log_env)
-            _note = kwargs.get("note", note)
+            deco_args = dict(
+                experiment=experiment,
+                run_name=run_name,
+                tracking_uri=tracking_uri,
+                repo_path=repo_path,
+                notebook_name=notebook_name,
+                log_env=log_env,
+                note=note,
+            )
+            deco_args.update(
+                {
+                    # pop() to remove decorator args from being
+                    # passed as kwargs to the decorated function itself
+                    k: kwargs.pop(k)  
+                    for k in deco_args
+                    if k in kwargs
+                }
+            )
 
-            mlflow.set_tracking_uri(_tracking_uri)
+            mlflow.set_tracking_uri(deco_args["tracking_uri"])
 
             # retrieve the experiment under the tracking_uri
-            exp_obj = mlflow.get_experiment_by_name(_experiment)
+            exp_obj = mlflow.get_experiment_by_name(deco_args['experiment'])
             if exp_obj is None:
-                print(f"Experiment {_experiment} not found, creating it.")
-                experiment_id = mlflow.create_experiment(_experiment)
+                print(f"Experiment {deco_args['experiment']} not found, creating it.")
+                experiment_id = mlflow.create_experiment(deco_args['experiment'])
 
                 from urllib.parse import urlparse
 
@@ -302,7 +314,7 @@ def mlflow_tracking(
 
             # start the run
             with mlflow.start_run(
-                experiment_id=experiment_id, run_name=_run_name
+                experiment_id=experiment_id, run_name=deco_args["run_name"]
             ) as run:
 
                 run_id = run.info.run_id
@@ -312,17 +324,17 @@ def mlflow_tracking(
 
                 print("Logging mlflow Run params, metrics and tags to", run_path)
                 print("Logging mlflow Run artifacts to", mlflow.get_artifact_uri())
-                print(f"Experiment name and id: {_experiment} {experiment_id}")
+                print(f"Experiment name and id: {deco_args['experiment']} {experiment_id}")
                 print(f"Run name and id: {run.info.run_name} {run_id}\n")
 
-                log_code_version(_notebook_name, _repo_path)
+                log_code_version(deco_args["notebook_name"], deco_args["repo_path"])
 
-                if _log_env:
+                if deco_args["log_env"]:
                     log_environ()
 
-                if _note:
+                if deco_args["note"]:
                     # override the mlflow.note.content system tag
-                    set_tag("mlflow.note.content", _note)
+                    set_tag("mlflow.note.content", deco_args["note"])
 
                 return f(*args, **kwargs)
 
