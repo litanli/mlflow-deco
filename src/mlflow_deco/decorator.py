@@ -228,7 +228,7 @@ def mlflow_tracking(
         return "hello world"
 
     # decorator args passed as kwargs to my_function takes precedence
-    my_function(a, b, experiment="tesla coil")  # "tesla coil" overrides "tutorial"
+    my_function(a, b, experiment="llm_tune")  # "llm_tune" overrides "tutorial"
 
 
     Parameters
