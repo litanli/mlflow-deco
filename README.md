@@ -2,6 +2,9 @@
 
 [MLflow](https://mlflow.org/docs/latest/what-is-mlflow.html) is an experiment tracking tool under the Apache License 2.0. While other MLOps tools like Weights & Biases offer more features, MLflow is free for commercial use.<br><br>
 
+---
+#### Installation 
+pip install git+https://github.com/litanli/mlflow-deco.git
 
 ---
 #### Definitions
@@ -44,7 +47,7 @@ import os
 import numpy as np
 
 @mlflow_tracking(experiment='tutorial')
-def run_experiment(a, b, **kwargs):
+def my_function(a, b, **kwargs):
 
     # Your code here
 
@@ -74,8 +77,5 @@ def run_experiment(a, b, **kwargs):
     return "hello world"
 
 # decorator args passed as kwargs at call time takes precedence
-run_experiment(a, b, experiment="tesla coil")  # "tesla coil" overrides "tutorial"
+my_function(a, b, experiment="llm_tune")  # "llm_tune" overrides "tutorial"
 ```
----
-#### Installation 
-pip install git+https://github.com/litanli/mlflow-deco.git
